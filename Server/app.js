@@ -5,8 +5,10 @@ var express = require('express'),
 
 // var productCtrl = require('./apiControllers/productControllers');
 var userCtrl = require('./apiControllers/userControllers');
-var orderCtrl = require('./apiControllers/orderControllers');
+var requestCtrl = require('./apiControllers/requestController');
 var app1Ctrl = require('./apiControllers/app1Controller');
+var app2Ctrl = require('./apiControllers/app2Controller');
+
 var verifyAccessToken = require('./repos/authRepo').verifyAccessToken;
 
 var app = express();
@@ -23,8 +25,9 @@ app.get('/', (req, res) => {
 
 // app.use('/api/products/', productCtrl);
 app.use('/api/users/', userCtrl);
-app.use('/api/orders/', verifyAccessToken, orderCtrl);
+app.use('/api/request', verifyAccessToken, requestCtrl);
 app.use('/app1/', app1Ctrl);
+app.use('/app2/', app2Ctrl);
 
 var port = process.env.PORT || 3000;
 app.listen(port, () => {

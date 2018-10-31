@@ -1,11 +1,11 @@
 var jwt = require('jsonwebtoken');
 var rndToken = require('rand-token');
 var moment = require('moment');
-
+var userRepo=require('./userRepo');
 var db = require('../fn/mysql-db');
 
-const SECRET = 'ABCDEF';
-const AC_LIFETIME = 600; // seconds
+const SECRET = 'HUUTHAN';
+const AC_LIFETIME = 60; // seconds
 
 exports.generateAccessToken = userEntity => {
     var payload = {
@@ -21,7 +21,7 @@ exports.generateAccessToken = userEntity => {
 }
 
 exports.verifyAccessToken = (req, res, next) => {
-    var token = req.headers['x-access-token'];
+    var token = req.headers['token'];
     console.log(token);
     if (token) {
         jwt.verify(token, SECRET, (err, payload) => {
@@ -48,6 +48,31 @@ exports.generateRefreshToken = () => {
     const SIZE = 80;
     return rndToken.generate(SIZE);
 }
+
+exports.refreshAccessToken = (refToken) => {
+    return new Promise((resolve, reject) => {
+        var sql = `select* from userRefreshTokenExt where token = '${refToken}'`;
+        db.load(sql) // delete
+            .then(rows => {
+                if (rows.length>0){
+                    userRepo.getUserInfo(rows[0].ID).then(info=>{
+                        var payload = {
+                            user: info,
+                            info: 'more info'
+                        }
+
+                        var token = jwt.sign(payload, SECRET, {
+                            expiresIn: AC_LIFETIME
+                        });
+
+                        resolve(token);
+                    })
+                }else {
+                    reject();
+                }
+            })
+    });
+};
 
 exports.updateRefreshToken = (userId, rfToken) => {
     return new Promise((resolve, reject) => {

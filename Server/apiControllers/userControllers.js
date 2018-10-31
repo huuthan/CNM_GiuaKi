@@ -5,16 +5,16 @@ var authRepo = require('../repos/authRepo');
 
 var router = express.Router();
 
-router.post('/', (req, res) => {
-	userRepo.add(req.body)
+router.post('/refreshToken', (req, res) => {
+    authRepo.refreshAccessToken(req.body.refToken)
 		.then(value => {
 			console.log(value);
 			res.statusCode = 201;
-			res.json(req.body);
+			res.json({access_token:value});
 		})
 		.catch(err => {
 			console.log(err);
-			res.statusCode = 500;
+			res.statusCode = 401;
 			res.end('View error log on console');
 		})
 })
