@@ -1,21 +1,10 @@
-// var table=$('#tableDH').DataTable({
-//     'paging': true,
-//     'lengthChange': true,
-//     'searching': false,
-//     'ordering': true,
-//     'info': true,
-//     'autoWidth': true,
-//     'language': {
-//         "lengthMenu": "Hiển thị _MENU_ dòng",
-//         "info": "Đang hiển thị _START_ tới _END_ tổng số _TOTAL_ kết quả",
-//         "paginate": {
-//             "first": "Trang đầu",
-//             "last": "Trang cuối",
-//             "next": "Tiếp",
-//             "previous": "Trước"
-//         }
-//     }
-// });
+window.onload = function() {
+    vm.setupSSE();
+    vm.initMap();
+    // loadCategories();
+};
+
+
 var vm = new Vue({
     el: '#container',
     data: {
@@ -25,7 +14,8 @@ var vm = new Vue({
         requestsVisible:false,
         requests: [],
         token:"",
-        refToken:""
+        refToken:"",
+        geocoder : {lat: 10.7623314, lng: 106.6820053}
     },
     methods: {
         login: function() {
@@ -84,7 +74,61 @@ var vm = new Vue({
                 }).then(function () {
 
             })
-        }
+        },
+        setupSSE : function() {
+            var self = this;
+            if (typeof(EventSource) === 'undefined') {
+                console.log('not support');
+                return;
+            }
+
+            var src = new EventSource('http://localhost:3000/requestAddedEvent');
+
+            src.onerror = function(e) {
+                console.log('error: ' + e);
+            }
+
+            src.addEventListener('REQUEST_ADDED', function(e) {
+                var data = JSON.parse(e.data);
+                self.requests.push(data);
+                self.refDataTable();
+
+            }, false);
+        },
+        refDataTable:function () {
+            new Promise(function (resolve,reject) {
+                $('#tableDH').DataTable().destroy();
+                resolve();
+            }).then(function () {
+                $('#tableDH').DataTable();
+            })
+        },
+        initMap:function() {
+            var self=this;
+            var address = "18/13 Trần Văn Thành";
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode( { 'address': address}, function(results, status) {
+
+                if (status == google.maps.GeocoderStatus.OK) {
+                    self.geocoder.lat = results[0].geometry.location.lat();
+                    self.geocoder.lng = results[0].geometry.location.lng();
+
+                    var map = new google.maps.Map(
+                        document.getElementById('map'), {zoom: 18, center: self.geocoder});
+                    var marker = new google.maps.Marker({position: self.geocoder, map: map});
+
+
+
+                }else {
+                    alert("false");
+                }
+            });
+
+
+
+
+}
+
     }
 
 });

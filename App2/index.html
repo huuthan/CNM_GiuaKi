@@ -5,6 +5,13 @@
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	</head>
+    <style>
+        #map {
+            width: 100%;
+            height: 600px;
+            background-color: grey;
+        }
+    </style>
 	<body>
 
 		<div class="container-fluid" id="container">
@@ -38,6 +45,7 @@
 										<th><a>Ghi chú</a></th>
 										<th><a>Ngày đặt</a></th>
 										<th><a>Trạng Thái</a></th>
+                                        <th><a>Xác định vị trí</a></th>
 
 									</tr>
 									</thead>
@@ -49,7 +57,8 @@
 										<td>{{c.address}}</td>
 										<td>{{c.note}} </td>
 										<td>{{c.time}} </td>
-										<td>{{c.status}} </td>
+										<td>Chưa xác nhận</td>
+                                        <td><button class="btn btn-success" type="button">Định vị</button></td>
 									</tr>
 									</tbody>
 								</table>
@@ -63,7 +72,9 @@
 
 				</div>
 			</div>
-
+            <div id="Gmap">
+                <div id="map"></div>
+            </div>
 
 
 		</div>
@@ -119,6 +130,11 @@
             // });
 		</script>
 
+
+        <script async defer
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPU6MzgMD9rQVYAY2esmU-_7DE3x7yJ0Y&callback=initMap">
+        </script>
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 
 	</body>
 </html>

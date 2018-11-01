@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var userRepo = require('../repos/userRepo'),
     moment = require('moment');
-
+var events = require('../events');
 //
 // load orders by User
 
@@ -18,7 +18,8 @@ router.post('/request', (req, res) => {
    };
 
    userRepo.addRequest(entity).then((value)=>{
-      console.log("Added");
+       entity.id_request = value.insertId;
+       events.publishRequestAdded(entity);
    }).catch((err)=>{
        console.log(err);
    });
